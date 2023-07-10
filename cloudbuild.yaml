@@ -1,0 +1,6 @@
+steps:
+- name: 'gcr.io/cloud-builders/echo'
+  args:
+  - '"hello world"'
+options:
+ logging: CLOUD_LOGGING_ONLY
