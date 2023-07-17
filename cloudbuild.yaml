@@ -5,7 +5,7 @@ steps:
       - '-c'
       - |        
         # Step 1: Create a new table from a master table
-        bq cp $PROJECT_ID:$_MYDATASET.$_MYMASTER_TABLE $PROJECT_ID:$_MYDATASET.$NEW_TABLE
+        bq cp $PROJECT_ID:$_MYDATASET.$_MYMASTER_TABLE $PROJECT_ID:$_MYDATASET.$_NEWTABLE
 
         # Step 2: Make schema changes to the new table
         bq query --use_legacy_sql=false "ALTER TABLE $PROJECT_ID:$_MYDATASET.$_NEWTABLE DROP COLUMN IF EXISTS Address"
