@@ -11,8 +11,8 @@ steps:
         bq query --use_legacy_sql=false "ALTER TABLE $PROJECT_ID.$_MYDATASET.$_NEWTABLE DROP COLUMN IF EXISTS gender"
         
         # Step 3: Compare the schema
-        bq show --schema --format=prettyjson $PROJECT_ID:$_MYDATASET.$_MYMASTER_TABLE > master_schema.json
-        bq show --schema --format=prettyjson $PROJECT_ID:$_MYDATASET.$_NEWTABLE > new_schema.json
+        bq show --schema --format=prettyjson $_MYDATASET.$_MYMASTER_TABLE > master_schema.json
+        bq show --schema --format=prettyjson $_MYDATASET.$_NEWTABLE > new_schema.json
         diff -q master_schema.json new_schema.json > /dev/null || exit 0
         
   - name: 'gcr.io/cloud-builders/gcloud'
@@ -20,7 +20,7 @@ steps:
     args:
       - '-c'
       - |
-        bq rm --force --table $_MYDATASET.$_NEWTABLE
+        bq rm --force=true --table $_MYDATASET.$_NEWTABLE
 
 substitutions:
   _MYDATASET: Ideathon_gcp
