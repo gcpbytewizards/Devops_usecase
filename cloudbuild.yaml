@@ -5,7 +5,7 @@ steps:
       - '-c'
       - |
         PROJECT_ID="gcds-oht33435u3-2023"
-        DATASET="Ideathon_gcp"
+        DATASET="${_DATASET}"
         MASTER_TABLE="Fake_data"
         NEW_TABLE="my_table"
         
