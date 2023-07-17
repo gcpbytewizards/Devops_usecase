@@ -6,17 +6,17 @@ steps:
       - |
         PROJECT_ID="gcds-oht33435u3-2023"
         _DATASET="Ideathon_gcp"
-        MASTER_TABLE="Fake_data"
+        _MASTER_TABLE="Fake_data"
         NEW_TABLE="my_table"
         
         # Step 1: Create a new table from a master table
-        bq cp $PROJECT_ID:$_DATASET.$MASTER_TABLE $PROJECT_ID:$DATASET.$NEW_TABLE
+        bq cp $PROJECT_ID:$_DATASET.$_MASTER_TABLE $PROJECT_ID:$DATASET.$NEW_TABLE
 
         # Step 2: Make schema changes to the new table
         bq query --use_legacy_sql=false "ALTER TABLE $PROJECT_ID:$_DATASET.$NEW_TABLE DROP COLUMN IF EXISTS Address"
 
         # Step 3: Compare the schema
-        bq show --schema --format=prettyjson $PROJECT_ID:$_DATASET.$MASTER_TABLE > master_schema.json
+        bq show --schema --format=prettyjson $PROJECT_ID:$_DATASET.$_MASTER_TABLE > master_schema.json
         bq show --schema --format=prettyjson $PROJECT_ID:$_DATASET.$NEW_TABLE > new_schema.json
         diff -q master_schema.json new_schema.json > /dev/null || exit 0
 options:
