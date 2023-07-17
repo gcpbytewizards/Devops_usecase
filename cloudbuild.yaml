@@ -15,7 +15,7 @@ steps:
     args:
       - '-c'
       - |
-        # Step 3: Compare the schema
+        # Step 3: Compare the  schema
         bq show --schema --format=prettyjson $PROJECT_ID:$_MYDATASET.$_MYMASTER_TABLE > master_schema.json
         bq show --schema --format=prettyjson $PROJECT_ID:$_MYDATASET.$_NEWTABLE > new_schema.json
         diff -q master_schema.json new_schema.json > /dev/null || exit 0
