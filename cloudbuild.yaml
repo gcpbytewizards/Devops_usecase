@@ -4,10 +4,10 @@ steps:
     args:
       - '-c'
       - |
-        PROJECT_ID="[gcds-oht33435u3-2023]"
-        DATASET="[Ideathon_gcp]"
-        MASTER_TABLE="[Fake_data]"
-        NEW_TABLE="[my_table]"
+        PROJECT_ID="gcds-oht33435u3-2023"
+        DATASET="Ideathon_gcp"
+        MASTER_TABLE="Fake_data"
+        NEW_TABLE="my_table"
         
         # Step 1: Create a new table from a master table
         bq cp $PROJECT_ID:$DATASET.$MASTER_TABLE $PROJECT_ID:$DATASET.$NEW_TABLE
