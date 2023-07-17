@@ -9,12 +9,7 @@ steps:
 
         # Step 2: Make schema changes to the new table
         bq query --use_legacy_sql=false "ALTER TABLE $PROJECT_ID:$_MYDATASET.$_NEWTABLE DROP COLUMN IF EXISTS Address"
-
-  substitutions:
-    _MYDATASET: Ideathon_gcp
-    _MY_MASTER_TABLE: Fake_data
-    _NEWTABLE: my_table
-
+        
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: 'bash'
     args:
@@ -25,6 +20,12 @@ steps:
         bq show --schema --format=prettyjson $PROJECT_ID:$_MYDATASET.$_NEWTABLE > new_schema.json
         diff -q master_schema.json new_schema.json > /dev/null || exit 0
 
+substitutions:
+  _MYDATASET: Ideathon_gcp
+  _MYMASTER_TABLE: Fake_data
+  _NEWTABLE: my_table
+
 options:
   logging: CLOUD_LOGGING_ONLY
+
 
