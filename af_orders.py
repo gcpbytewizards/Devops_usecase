@@ -69,6 +69,30 @@ FROM CLEANUP
 """
 )
 
+ORDERS_QUERY = (
+f'''
+  create or replace table gcds-oht33435u3-2023.Ideathon_gcp.PRODUCTS_DATA
+  OPTIONS(
+      description="""fetching data from GOLD_PRODUCTS_DATA table """
+    )
+  as WITH SOURCE AS (
+    select * from gcds-oht33435u3-2023.Ideathon_gcp.GOLD_PRODUCTS_DATA
+  )
+  
+, DEDUP AS (
+    SELECT
+        *
+        , ROW_NUMBER() OVER (
+            PARTITION BY
+                product_id
+            ORDER BY LOAD_DATETIME DESC
+        ) AS RANK
+    FROM SOURCE
+)
+  select * except(RANK) from DEDUP where RANK = 1
+'''
+)
+
 with airflow.DAG(
         'af_orders',
         'catchup=False',
@@ -102,9 +126,22 @@ with airflow.DAG(
         location="us-central1",
     )
     
+    orders_query_job = BigQueryInsertJobOperator(
+        task_id="orders_query_job",
+        configuration={
+            "query": {
+                "query": ORDERS_QUERY,
+                "useLegacySql": False,
+                "priority": "BATCH",
+            }
+        },
+        location="us-central1",
+    )
+    
     print_dag_run_conf = bash_operator.BashOperator(
         task_id='print_dag_run_conf', bash_command='echo {{ dag_run.id }}')
 
     create_external_table >> insert_query_job
-    insert_query_job >> print_dag_run_conf
+    insert_query_job >> orders_query_job
+    orders_query_job >> print_dag_run_conf
 
