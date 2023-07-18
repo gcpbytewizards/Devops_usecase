@@ -4,7 +4,7 @@ steps:
     args:
       - '-c'
       - |        
-        # Step 1: Create a new table from a master table
+        #  Step 1: Create a new table from a master table
         bq cp $PROJECT_ID:$_MYDATASET.$_MYMASTER_TABLE $PROJECT_ID:$_MYDATASET.$_NEWTABLE
 
         # Step 2: Make schema changes to the new table
