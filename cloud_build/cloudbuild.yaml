@@ -5,13 +5,13 @@ steps:
       - '-c'
       - |        
         #  Before proceeding this build validate the requested BQ MASTER table lineage from the BQ console 
-        # Make schema changes to the new table / Specify the required modification  
+        # Make schema changes to the Master table / Specify the required modification  
         
         bq query --use_legacy_sql=false "ALTER TABLE $PROJECT_ID.$_MYDATASET.$_NEWTABLE DROP COLUMN IF EXISTS gender"
 
 substitutions:
   _MYDATASET: Ideathon_gcp
-  _MYMASTER_TABLE: Fake_data
+  _MYMASTER_TABLE: RAW_PRODUCTS_DATA_EXT
 
 options:
   logging: CLOUD_LOGGING_ONLY
