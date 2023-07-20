@@ -1,121 +1,117 @@
-- name: 'gcr.io/cloud-builders/git'
-  entrypoint: '/bin/bash'
-  args:
-    - -c
-    - | 
-      git checkout $BRANCH_NAME;
-      #Fetch the Current and Previous SHA values
-      if [[ "$BRANCH_NAME" == "main" || "$BRANCH_NAME" == "main" ]];
-      then
-      current_commit_sha="$(git log --format="%H" -n 1)";
-      echo "Changes happening in current commit $current_commit_sha" 
-      last_commit_sha="$(git log -n 2 --pretty=format:"%H" | tail -1)"; 
-      echo "Changes happening in last commit $last_commit_sha"
-      else      
-      fi
-      airflow_projects="$(git diff --name-status $last_commit_sha $current_commit_sha | uniq)" &&
-      echo "changes observed from git diff $airflow_projects" &&
-      IFS=$'\n' &&
-      airflow_projects_str=($airflow_projects) &&
-      $(unset IFS) &&
-      airflow_projects_list="" &&
-      airflow_deleted_projects_list="" &&
-      airflow_renamed_projects_list="" &&
-      airflow_projects_count=0 &&
-      airflow_deleted_projects_count=0 &&
-      airflow_renamed_projects_count=0 &&
-      $(mkdir /workspace/local_airflow) &&
-      
-      for project in "${airflow_projects_str[@]}";
-      do
-        IFS=$'\t' &&
-        proj=($project) &&
-        $(unset IFS) &&
-        status=${proj[0]}
-        if [ ${status:0:1} == "D" ]; then
-          IFS=$'/' &&
-          del_proj=(${proj[1]}) &&
-          $(unset IFS) &&
-          IFS=$'\n' &&
-          $(unset IFS) &&
-          if [ ${del_proj[0]} == "airflow" ]; then
-          airflow_deleted_projects_count=$[airflow_deleted_projects_count+1]
-          airflow_deleted_projects_list="$airflow_deleted_projects_list""${del_proj[1]}"","
-          fi
-        elif [ ${status:0:1} == "R" ]; then
-          IFS=$'/' &&
-          del_proj=(${proj[1]}) &&
-          $(unset IFS) &&
-          IFS=$'\n' &&
-          $(unset IFS) &&
-          if [ ${del_proj[0]} == "airflow" ]; then
-          airflow_renamed_projects_count=$[airflow_renamed_projects_count+1]
-          airflow_deleted_projects_list="$airflow_deleted_projects_list""${del_proj[1]}"","
-          $(cp "${proj[2]}" /workspace/local_airflow/)
-          airflow_projects_list="$airflow_projects_list""${proj[2]}"","
-          fi
-        else
-          IFS=$'/' &&
-          del_proj=(${proj[1]}) &&
-          $(unset IFS) &&
-          IFS=$'\n' &&
-          $(unset IFS) &&
-          if [ ${del_proj[0]} == "airflow" ]; then
-          $(cp "${proj[1]}" /workspace/local_airflow/)
-          airflow_projects_count=$[airflow_projects_count+1]
-          airflow_projects_list="$airflow_projects_list""${proj[1]}"","
-          fi
+steps:
+  - name: 'gcr.io/cloud-builders/git'
+    entrypoint: '/bin/bash'
+    args:
+      - '-c'
+      - |
+        git checkout $BRANCH_NAME
+        # Fetch the Current and Previous SHA values
+        if [[ "$BRANCH_NAME" == "main" || "$BRANCH_NAME" == "main" ]]; then
+          current_commit_sha="$(git log --format="%H" -n 1)"
+          echo "Changes happening in current commit $current_commit_sha"
+          last_commit_sha="$(git log -n 2 --pretty=format:"%H" | tail -1)"
+          echo "Changes happening in last commit $last_commit_sha"
         fi
-      done &&
-      
-      airflow_projects_list=$(echo $airflow_projects_list | sed 's/.$//') &&
-      airflow_deleted_projects_list=$(echo $airflow_deleted_projects_list | sed 's/.$//') &&
-      echo "$airflow_projects_list" > /workspace/local_airflow_validator.txt &&
-      echo "$airflow_deleted_projects_list" > /workspace/local_deleted_airflow_validator.txt &&
-      echo "airflow_projects_list $airflow_projects_list"
-      echo "airflow_deleted_projects_list $airflow_deleted_projects_list"
-      echo "airflow_projects_count: $airflow_projects_count" &&
-      echo "airflow_deleted_projects_count: $airflow_deleted_projects_count" &&
-      echo "airflow_renamed_projects_count: $airflow_renamed_projects_count"
-  id: get_changed_files
+        airflow_projects="$(git diff --name-status $last_commit_sha $current_commit_sha | uniq)" &&
+        echo "changes observed from git diff $airflow_projects" &&
+        IFS=$'\n' &&
+        airflow_projects_str=($airflow_projects) &&
+        $(unset IFS) &&
+        airflow_projects_list="" &&
+        airflow_deleted_projects_list="" &&
+        airflow_renamed_projects_list="" &&
+        airflow_projects_count=0 &&
+        airflow_deleted_projects_count=0 &&
+        airflow_renamed_projects_count=0 &&
+        mkdir /workspace/local_airflow
 
-- name: 'gcr.io/cloud-builders/git'
-  entrypoint: '/bin/bash'
-  args:
-    - -c
-    - |
-      airflow_deleted_projects=$(cat /workspace/local_deleted_airflow_validator.txt) &&
-      echo "airflow_deleted_projects $airflow_deleted_projects" &&
-      airflow_deleted_project=$(echo $airflow_deleted_projects | sed 's/,/\n/g') &&
-      for project in $airflow_deleted_project;
-      do
-        echo "deleting airflow DAG $project"
-        $(gsutil rm gs://${_COMPOSER_BUCKET}/dags/${project})
-        echo "deleted airflow DAG $project"
-      done 
-  id: airflow_dag_delete
+        for project in "${airflow_projects_str[@]}"; do
+          IFS=$'\t' &&
+          proj=($project) &&
+          $(unset IFS) &&
+          status=${proj[0]}
+          if [ ${status:0:1} == "D" ]; then
+            IFS=$'/' &&
+            del_proj=(${proj[1]}) &&
+            $(unset IFS) &&
+            IFS=$'\n' &&
+            $(unset IFS) &&
+            if [ ${del_proj[0]} == "airflow" ]; then
+              airflow_deleted_projects_count=$((airflow_deleted_projects_count+1))
+              airflow_deleted_projects_list="$airflow_deleted_projects_list${del_proj[1]},"
+            fi
+          elif [ ${status:0:1} == "R" ]; then
+            IFS=$'/' &&
+            del_proj=(${proj[1]}) &&
+            $(unset IFS) &&
+            IFS=$'\n' &&
+            $(unset IFS) &&
+            if [ ${del_proj[0]} == "airflow" ]; then
+              airflow_renamed_projects_count=$((airflow_renamed_projects_count+1))
+              airflow_deleted_projects_list="$airflow_deleted_projects_list${del_proj[1]},"
+              cp "${proj[2]}" /workspace/local_airflow/
+              airflow_projects_list="$airflow_projects_list${proj[2]},"
+            fi
+          else
+            IFS=$'/' &&
+            del_proj=(${proj[1]}) &&
+            $(unset IFS) &&
+            IFS=$'\n' &&
+            $(unset IFS) &&
+            if [ ${del_proj[0]} == "airflow" ]; then
+              cp "${proj[1]}" /workspace/local_airflow/
+              airflow_projects_count=$((airflow_projects_count+1))
+              airflow_projects_list="$airflow_projects_list${proj[1]},"
+            fi
+          fi
+        done
 
-- name: 'gcr.io/cloud-builders/git'
-  entrypoint: '/bin/bash'
-  args:
-    - -c
-    - | 
-      airflow_projects=$(cat /workspace/local_airflow_validator.txt) &&
-      echo "airflow_projects $airflow_projects" &&
-      airflow_project=$(echo $airflow_projects | sed 's/,/\n/g') &&
-       airflow_projects_count=0 &&
-      for project in $airflow_project;
-      do
-        airflow_projects_count=$[airflow_projects_count+1]
-      done &&
-      if(( $airflow_projects_count!=0 ))
-      then
-       echo "Copying files to Bucket" &&
-       $(gsutil cp '/workspace/local_airflow/*' 'gs://${_COMPOSER_BUCKET}/dags') &&
-       echo "Files have been copied to Bucket"
-      else
-      echo "No DAGS to add or modify"
-      fi
-  id: airflow_dag_modify
+        airflow_projects_list=$(echo $airflow_projects_list | sed 's/.$//')
+        airflow_deleted_projects_list=$(echo $airflow_deleted_projects_list | sed 's/.$//')
+        echo "$airflow_projects_list" > /workspace/local_airflow_validator.txt
+        echo "$airflow_deleted_projects_list" > /workspace/local_deleted_airflow_validator.txt
+        echo "airflow_projects_list $airflow_projects_list"
+        echo "airflow_deleted_projects_list $airflow_deleted_projects_list"
+        echo "airflow_projects_count: $airflow_projects_count"
+        echo "airflow_deleted_projects_count: $airflow_deleted_projects_count"
+        echo "airflow_renamed_projects_count: $airflow_renamed_projects_count"
+    id: get_changed_files
+
+  - name: 'gcr.io/cloud-builders/git'
+    entrypoint: '/bin/bash'
+    args:
+      - '-c'
+      - |
+        airflow_deleted_projects=$(cat /workspace/local_deleted_airflow_validator.txt)
+        echo "airflow_deleted_projects $airflow_deleted_projects"
+        airflow_deleted_project=$(echo $airflow_deleted_projects | sed 's/,/\n/g')
+        for project in $airflow_deleted_project; do
+          echo "deleting airflow DAG $project"
+          gsutil rm gs://${_COMPOSER_BUCKET}/dags/${project}
+          echo "deleted airflow DAG $project"
+        done
+    id: airflow_dag_delete
+
+  - name: 'gcr.io/cloud-builders/git'
+    entrypoint: '/bin/bash'
+    args:
+      - '-c'
+      - |
+        airflow_projects=$(cat /workspace/local_airflow_validator.txt)
+        echo "airflow_projects $airflow_projects"
+        airflow_project=$(echo $airflow_projects | sed 's/,/\n/g')
+        airflow_projects_count=0
+        for project in $airflow_project; do
+          airflow_projects_count=$((airflow_projects_count+1))
+        done
+        if ((airflow_projects_count != 0)); then
+          echo "Copying files to Bucket"
+          gsutil cp '/workspace/local_airflow/*' "gs://${_COMPOSER_BUCKET}/dags"
+          echo "Files have been copied to Bucket"
+        else
+          echo "No DAGS to add or modify"
+        fi
+    id: airflow_dag_modify
+
 options:
- logging: CLOUD_LOGGING_ONLY
+  logging: CLOUD_LOGGING_ONLY
