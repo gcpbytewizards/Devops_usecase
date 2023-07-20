@@ -30,6 +30,7 @@ steps:
           else
             echo "File $file has unknown status $status in the current commit"
           fi
+        '
 
 substitutions:
   _LAST_COMMIT: FETCH_HEAD
