@@ -16,7 +16,7 @@ steps:
       - '-c'
       - |
         # Find changed files and process them one by one
-        git diff --name-status $_LAST_COMMIT $_CURRENT_COMMIT -- airflow_code/* | grep -E '^(M|A|D)' | cut -f2- | xargs -I {} sh -c '
+        git diff --name-status $_LAST_COMMIT $_CURRENT_COMMIT  airflow_code/* | grep -E '^(M|A|D)' | cut -f2- | xargs -I {} sh -c '
           status=$(git diff --name-status $_LAST_COMMIT $_CURRENT_COMMIT {} | cut -f1)
           file=$(git diff --name-status $_LAST_COMMIT $_CURRENT_COMMIT {} | cut -f2-)
           if [ "$status" == "D" ]; then
