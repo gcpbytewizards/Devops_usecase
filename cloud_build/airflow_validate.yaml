@@ -4,6 +4,10 @@ steps:
     args:
       - '-c'
       - |
+        git clone https://github.com/gcpbytewizards/Devops_usecase.git &&
+        cd $REPO_NAME &&
+        echo "Branch Name: $BRANCH_NAME" &&
+        git checkout $BRANCH_NAME;
         git checkout $BRANCH_NAME
         # Fetch the Current and Previous SHA values
         if [[ "$BRANCH_NAME" == "main" || "$BRANCH_NAME" == "main" ]]; then
