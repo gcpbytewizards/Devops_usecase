@@ -29,9 +29,9 @@ steps:
             echo "File $file has unknown status $status in the current commit"
           fi
         done
-
-options:
   substitution:
-    _COMMIT_SHA_BEFORE: 'FETCH_HEAD'
-    _BRANCH_NAME: 'main'
-    _COMMIT_SHA_AFTER: 'HEAD'
+    _COMMIT_SHA_BEFORE: FETCH_HEAD
+    _BRANCH_NAME: main
+    _COMMIT_SHA_AFTER: HEAD
+  options:
+    logging: CLOUD_LOGGING_ONLY
