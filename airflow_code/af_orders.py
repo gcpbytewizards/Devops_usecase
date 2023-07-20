@@ -58,9 +58,7 @@ FROM CLEANUP
             )
 
         when matched then update set
-        `unit_price` = DBT_INTERNAL_SOURCE.`unit_price`,`color` = DBT_INTERNAL_SOURCE.`color`,`weight` = DBT_INTERNAL_SOURCE.`weight`,`weight_unit` = DBT_INTERNAL_SOURCE.`weight_unit`,`order_quantity` = DBT_INTERNAL_SOURCE.`order_quantity`,`product_id` = DBT_INTERNAL_SOURCE.`product_id`,`sales` = DBT_INTERNAL_SOURCE.`sales`,`LOAD_DATETIME` = DBT_INTERNAL_SOURCE.`LOAD_DATETIME`,`total_sales` = DBT_INTERNAL_SOURCE.`total_sales`
-
-    
+        `unit_price` = DBT_INTERNAL_SOURCE.`unit_price`,`color` = DBT_INTERNAL_SOURCE.`color`,`weight` = DBT_INTERNAL_SOURCE.`weight`,`weight_unit` = DBT_INTERNAL_SOURCE.`weight_unit`,`order_quantity` = DBT_INTERNAL_SOURCE.`order_quantity`,`product_id` = DBT_INTERNAL_SOURCE.`product_id`,`sales` = DBT_INTERNAL_SOURCE.`sales`,`LOAD_DATETIME` = DBT_INTERNAL_SOURCE.`LOAD_DATETIME`,`total_sales` = DBT_INTERNAL_SOURCE.`total_sales`   
 
     when not matched then insert
     (`unit_price`,`color`,`weight`,`weight_unit`,`order_quantity`,`product_id`,`sales`,`LOAD_DATETIME`,`total_sales`)
