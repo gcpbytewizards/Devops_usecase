@@ -15,7 +15,7 @@ steps:
     args:
       - '-c'
       - |        
-        git diff --name-status $LAST_COMMIT $CURRENT_COMMIT -- airflow_code/ | while read status file; do
+        git diff --name-status $_LAST_COMMIT $_CURRENT_COMMIT -- airflow_code/ | while read status file; do
           if [ "$status" == "D" ]; then
             echo "File $file deleted in the current commit"
             # Remove the file from the GCS bucket
@@ -30,9 +30,8 @@ steps:
         done
 
 substitutions:
-  BRANCH_NAME: main
-  LAST_COMMIT: FETCH_HEAD
-  CURRENT_COMMIT: HEAD
+  _LAST_COMMIT: FETCH_HEAD
+  _CURRENT_COMMIT: HEAD
 
 options:
   logging: CLOUD_LOGGING_ONLY
