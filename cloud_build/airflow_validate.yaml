@@ -79,6 +79,9 @@ steps:
         echo "airflow_projects_count: $airflow_projects_count"
         echo "airflow_deleted_projects_count: $airflow_deleted_projects_count"
         echo "airflow_renamed_projects_count: $airflow_renamed_projects_count"
+    volumes:
+    - name: 'ssh'
+      path: /root/.ssh
     id: get_changed_files
 
   - name: 'gcr.io/cloud-builders/git'
