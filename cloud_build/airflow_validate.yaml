@@ -7,15 +7,18 @@ steps:
       - |
         git clone https://github.com/gcpbytewizards/Devops_usecase.git
         cd Devops_usecase
-        git checkout $BRANCH_NAME
+        git checkout $BRANCH_NAME;
 
-  # Step 2: Check changes in the folder
+  # Step 3: Check changes in the folder
   - name: 'gcr.io/cloud-builders/git'
     entrypoint: '/bin/bash'
     args:
       - '-c'
-      - |        
-        git diff --name-status $_LAST_COMMIT $_CURRENT_COMMIT  airflow_code/* | grep -E '^(M|A|D)' | cut -f2- | xargs -I {} sh -c ' do
+      - |
+        # Find changed files and process them one by one
+        git diff --name-status $_LAST_COMMIT $_CURRENT_COMMIT -- airflow_code/* | grep -E '^(M|A|D)' | cut -f2- | xargs -I {} sh -c '
+          status=$(git diff --name-status $_LAST_COMMIT $_CURRENT_COMMIT {} | cut -f1)
+          file=$(git diff --name-status $_LAST_COMMIT $_CURRENT_COMMIT {} | cut -f2-)
           if [ "$status" == "D" ]; then
             echo "File $file deleted in the current commit"
             # Remove the file from the GCS bucket
@@ -23,14 +26,14 @@ steps:
           elif [ "$status" == "M" ] || [ "$status" == "A" ]; then
             echo "File $file modified or added in the current commit"
             # Upload the file to the GCS bucket
-            gsutil cp $file gs://_COMPOSER_BUCKET/$file
+            gsutil cp airflow_code/$file gs://_COMPOSER_BUCKET/$file
           else
             echo "File $file has unknown status $status in the current commit"
           fi
-        done
 
 substitutions:
   _LAST_COMMIT: FETCH_HEAD
+  _BRANCH_NAME: main
   _CURRENT_COMMIT: HEAD
 
 options:
