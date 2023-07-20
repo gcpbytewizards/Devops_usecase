@@ -5,8 +5,8 @@
       - '-c'
       - |
         # Find changed files and process them one by one
-          status=$(git diff --name-status $_LAST_COMMIT $_CURRENT_COMMIT  airflow_code/* |  grep -E '^(M|A|D)' | cut -f1)
-          file=$(git diff --name-status $_LAST_COMMIT $_CURRENT_COMMIT  airflow_code/* |  grep -E '^(M|A|D)' | cut -f2- | sed 's,^airflow_code/,,g' | xargs -I {} sh -c 'echo {}')
+          status=$(git diff --name-status $_LAST_COMMIT $_CURRENT_COMMIT  airflow_code/* |  grep -E '^(M|A|D)' | cut -f1) &&
+          file=$(git diff --name-status $_LAST_COMMIT $_CURRENT_COMMIT  airflow_code/* |  grep -E '^(M|A|D)' | cut -f2- | sed 's,^airflow_code/,,g' | xargs -I {} sh -c 'echo {}') &&
           if [ "$status" == "D" ]; then
             echo "File $file deleted in the current commit"
             # Remove the file from the GCS bucket
