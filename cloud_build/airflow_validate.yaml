@@ -30,8 +30,8 @@ steps:
         done
 
 substitutions:
-  _LAST_COMMIT: FETCH_HEAD
-  _CURRENT_COMMIT: HEAD
+  _LAST_COMMIT: git log -n 2 --pretty=format:"%H" | tail -1
+  _CURRENT_COMMIT: git log --format="%H" -n 1
 
 options:
   logging: CLOUD_LOGGING_ONLY
