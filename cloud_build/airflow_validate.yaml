@@ -16,9 +16,8 @@ steps:
       - '-c'
       - |
         # Find changed files and process them one by one
-        git diff --name-status $_LAST_COMMIT $_CURRENT_COMMIT  airflow_code/* | grep -E '^(M|A|D)' | cut -f2- | xargs -I {} sh -c '
-          status=$(git diff --name-status $_LAST_COMMIT $_CURRENT_COMMIT {} | cut -f1)
-          file=$(git diff --name-status $_LAST_COMMIT $_CURRENT_COMMIT {} | cut -f2-)
+          status=$(git diff --name-status $_LAST_COMMIT $_CURRENT_COMMIT  airflow_code/* | grep -E '^(M|A|D)')
+          file=$(git diff --name-status $_LAST_COMMIT $_CURRENT_COMMIT  airflow_code/* | grep -E '^(M|A|D)')
           if [ "$status" == "D" ]; then
             echo "File $file deleted in the current commit"
             # Remove the file from the GCS bucket
@@ -30,7 +29,6 @@ steps:
           else
             echo "File $file has unknown status $status in the current commit"
           fi
-        '
 
 substitutions:
   _LAST_COMMIT: FETCH_HEAD
