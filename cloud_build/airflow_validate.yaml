@@ -30,6 +30,7 @@ steps:
           else
             echo "File $file has an unknown status $line in the current commit"
           fi
+        done
     id: Airflow_validate
 
 substitutions:
