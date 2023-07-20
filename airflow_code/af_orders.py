@@ -5,7 +5,6 @@ from airflow.providers.google.cloud.operators.bigquery import BigQueryCreateExte
 from airflow.providers.google.cloud.operators.bigquery import BigQueryInsertJobOperator
 
 YESTERDAY = datetime.datetime.now() - datetime.timedelta(days=1)
-
 default_args = {
     'owner': 'Composer Example',
     'depends_on_past': False,
