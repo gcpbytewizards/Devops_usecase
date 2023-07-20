@@ -1,15 +1,4 @@
-steps:
-  # Step 1: Clone the GitHub repository
-  - name: 'gcr.io/cloud-builders/git'
-    entrypoint: '/bin/bash'
-    args:
-      - '-c'
-      - |
-        git clone https://github.com/gcpbytewizards/Devops_usecase.git
-        cd Devops_usecase
-        git checkout $BRANCH_NAME;
-
-  # Step 3: Check changes in the folder
+  # Step 1: Check changes in the folder
   - name: 'gcr.io/cloud-builders/git'
     entrypoint: '/bin/bash'
     args:
