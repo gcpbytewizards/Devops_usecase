@@ -15,7 +15,7 @@ steps:
     args:
       - '-c'
       - |        
-        git diff --name-status "$_LAST_COMMIT" "$_CURRENT_COMMIT"  -- airflow_code/* | while read status file; do
+        git diff --name-status $_LAST_COMMIT $_CURRENT_COMMIT  airflow_code/* | grep -E '^(M|A|D)' | cut -f2- | xargs -I {} sh -c ' do
           if [ "$status" == "D" ]; then
             echo "File $file deleted in the current commit"
             # Remove the file from the GCS bucket
