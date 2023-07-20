@@ -7,9 +7,9 @@ steps:
       - |
         # Find changed files and process them one by one
         status="$(git diff --name-status $_LAST_COMMIT $_CURRENT_COMMIT airflow_code/* | grep -E '^(M|A|D)' | cut -f1)" &&
-        file="$(git diff --name-status $_LAST_COMMIT $_CURRENT_COMMIT airflow_code/* | grep -E '^(M|A|D)' | cut -f2- | sed 's,^airflow_code/,,g' | xargs -I {} sh -c 'echo {}')" &&
-  
+        file="$(git diff --name-status $_LAST_COMMIT $_CURRENT_COMMIT airflow_code/* | grep -E '^(M|A|D)' | cut -f2- | sed 's,^airflow_code/,,g' | xargs -I {} sh -c 'echo {}')"
     id: git_diff
+
   # Step 2: Process the changes using gcloud commands
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: '/bin/bash'
@@ -31,6 +31,7 @@ steps:
             echo "File $file has an unknown status $line in the current commit"
           fi
     id: Airflow_validate
+
 substitutions:
   _LAST_COMMIT: FETCH_HEAD
   _BRANCH_NAME: main
@@ -38,5 +39,6 @@ substitutions:
 
 options:
   logging: CLOUD_LOGGING_ONLY
+
 
 
