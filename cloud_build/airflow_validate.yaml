@@ -6,8 +6,8 @@ steps:
       - '-c'
       - |
         git clone https://github.com/gcpbytewizards/Devops_usecase.git
-        cd $REPO_NAME
-        git checkout $BRANCH_NAME;
+        cd Devops_usecase
+        git checkout $BRANCH_NAME
 
   # Step 2: Check changes in the folder
   - name: 'gcr.io/cloud-builders/git'
@@ -28,5 +28,12 @@ steps:
             echo "File $file has unknown status $status in the current commit"
           fi
         done
-  options:
-    logging: CLOUD_LOGGING_ONLY
+
+substitutions:
+  BRANCH_NAME: main
+  last_commit_sha: FETCH_HEAD
+  current_commit_sha: HEAD
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
