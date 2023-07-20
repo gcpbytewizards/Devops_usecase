@@ -6,17 +6,16 @@ steps:
       - '-c'
       - |
         git clone https://github.com/gcpbytewizards/Devops_usecase.git
-        cd Devops_usecase
-        git fetch origin $BRANCH_NAME
-        git reset --hard origin/$BRANCH_NAME
+        cd $REPO_NAME
+        git checkout $BRANCH_NAME;
 
   # Step 2: Check changes in the folder
   - name: 'gcr.io/cloud-builders/git'
     entrypoint: '/bin/bash'
     args:
       - '-c'
-      - |
-        git diff --name-status $COMMIT_SHA_BEFORE $COMMIT_SHA_AFTER -- airflow_code/ | while read status file; do
+      - |        
+        git diff --name-status $last_commit_sha $current_commit_sha -- airflow_code/ | while read status file; do
           if [ "$status" == "D" ]; then
             echo "File $file deleted in the current commit"
             # Remove the file from the GCS bucket
@@ -29,9 +28,5 @@ steps:
             echo "File $file has unknown status $status in the current commit"
           fi
         done
-  substitution:
-    _COMMIT_SHA_BEFORE: FETCH_HEAD
-    _BRANCH_NAME: main
-    _COMMIT_SHA_AFTER: HEAD
   options:
     logging: CLOUD_LOGGING_ONLY
