@@ -8,9 +8,8 @@ steps:
         # Find changed files and process them one by one
         status="$(git diff --name-status $_LAST_COMMIT $_CURRENT_COMMIT airflow_code/* | grep -E '^(M|A|D)' | cut -f1)" &&
         file="$(git diff --name-status $_LAST_COMMIT $_CURRENT_COMMIT airflow_code/* | grep -E '^(M|A|D)' | cut -f2- | sed 's,^airflow_code/,,g' | xargs -I {} sh -c 'echo {}')" &&
-        echo "Status: $status"
-        echo "File: $file" > /workspace/output.txt
-
+  
+    id: git_diff
   # Step 2: Process the changes using gcloud commands
   - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: '/bin/bash'
@@ -18,7 +17,6 @@ steps:
       - '-c'
       - |
         # Read the output from the previous step
-        file=$(cat /workspace/output.txt)
         while IFS= read -r line; do
           if [ "$line" == "Status: D" ]; then
             echo "File $file deleted in the current commit"
@@ -32,8 +30,7 @@ steps:
           else
             echo "File $file has an unknown status $line in the current commit"
           fi
-        done < output.txt
-
+    id: Airflow_validate
 substitutions:
   _LAST_COMMIT: FETCH_HEAD
   _BRANCH_NAME: main
