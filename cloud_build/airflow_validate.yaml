@@ -1,6 +1,6 @@
 steps:
   # Step 1: Check changes in the folder
-  - name: 'gcr.io/cloud-builders/git'
+  - name: 'gcr.io/cloud-builders/gcloud'
     entrypoint: '/bin/bash'
     args:
       - '-c'
