@@ -4,7 +4,6 @@ from airflow.operators import bash_operator
 from airflow.providers.google.cloud.operators.bigquery import BigQueryCreateExternalTableOperator
 from airflow.providers.google.cloud.operators.bigquery import BigQueryInsertJobOperator
 
-
 YESTERDAY = datetime.datetime.now() - datetime.timedelta(days=1)
 default_args = {
     'owner': 'Composer Example',
