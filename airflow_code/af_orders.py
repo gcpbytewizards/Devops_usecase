@@ -16,7 +16,6 @@ default_args = {
     'start_date': YESTERDAY,
 }
 
-
 ROWS_QUERY = (
 f"""
   merge into `gcds-oht33435u3-2023`.`Ideathon_gcp`.`GOLD_PRODUCTS_DATA` as DBT_INTERNAL_DEST
