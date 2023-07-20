@@ -25,6 +25,7 @@ steps:
           elif [ "$status" == "M" ] || [ "$status" == "A" ]; then
             echo "File $file modified or added in the current commit"
             # Upload the file to the GCS bucket
+            gsutil rm gs://_COMPOSER_BUCKET/$file
             gsutil cp airflow_code/$file gs://_COMPOSER_BUCKET/$file
           else
             echo "File $file has unknown status $status in the current commit"
