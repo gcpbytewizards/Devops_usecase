@@ -137,7 +137,8 @@ with airflow.DAG(
         },
         location="us-central1",
     )
-    
+
+            
     print_dag_run_conf = bash_operator.BashOperator(
         task_id='print_dag_run_conf', bash_command='echo {{ dag_run.id }}')
 
